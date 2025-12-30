@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Task & Attendance Manager</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 400px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: #eef;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .done {
+            text-decoration: line-through;
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Student Task & Attendance</h2>
+
+    <input type="text" id="taskName" placeholder="Task Name">
+    <input type="text" id="subject" placeholder="Subject">
+
+    <select id="attendance">
+        <option value="Present">Present</option>
+        <option value="Absent">Absent</option>
+    </select>
+
+    <button onclick="addTask()">Add Task</button>
+
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function addTask() {
+        let taskName = document.getElementById("taskName").value;
+        let subject = document.getElementById("subject").value;
+        let attendance = document.getElementById("attendance").value;
+
+        if (taskName === "" || subject === "") {
+            alert("Fill all fields");
+            return;
+        }
+
+        let task = {
+            name: taskName,
+            subject: subject,
+            attendance: attendance,
+            completed: false
+        };
+
+        tasks.push(task);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        displayTasks();
+
+        document.getElementById("taskName").value = "";
+        document.getElementById("subject").value = "";
+    }
+
+    function displayTasks() {
+        let list = document.getElementById("taskList");
+        list.innerHTML = "";
+
+        tasks.forEach((task, index) => {
+            let li = document.createElement("li");
+            li.className = task.completed ? "done" : "";
+
+            li.innerHTML =
+                task.name + " | " +
+                task.subject + " | " +
+                task.attendance +
+                "<br><button onclick='markDone(" + index + ")'>Done</button> " +
+                "<button onclick='deleteTask(" + index + ")'>Delete</button>";
+
+            list.appendChild(li);
+        });
+    }
+
+    function markDone(index) {
+        tasks[index].completed = true;
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        displayTasks();
+    }
+
+    function deleteTask(index) {
+        tasks.splice(index, 1);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        displayTasks();
+    }
+
+    displayTasks();
+</script>
+
+</body>
+</html>
